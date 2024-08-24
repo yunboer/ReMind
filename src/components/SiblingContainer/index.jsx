@@ -12,7 +12,7 @@ const SiblingContainer = ({ layerKey, siblingKey }) => {
       {Array(node_cnt)
         .fill()
         .map((_, i) => (
-          <Node key={render.nodes[layerKey][siblingKey][i]} layerKey={layerKey} siblingKey={siblingKey} nodeKey={i} nodeId={render.nodes[layerKey][siblingKey][i]}/>
+          <Node key={render.nodes[layerKey][siblingKey][i]} nodeId={render.nodes[layerKey][siblingKey][i]}/>
         ))}
     </div>
   );

@@ -1,11 +1,10 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { v4 as uuidv4 } from "uuid";
+import { createSlice, current } from "@reduxjs/toolkit";
 
 /*
     the tree node structure is like this:
     {
         "root": {
-            id: "root",
+            nodeId: "root",
             layerKey: 0, // siblingKey = parent->nodeKey
             nodeKey: 0,
             children: [],
@@ -40,48 +39,64 @@ function updateTreeInfoById(tree, Id) {
   });
 }
 
-function deleteNodeById(tree, Id) {
+function _deleteNodeById(tree, Id) {
   const node = tree[Id];
   if (node.children.length !== 0) {
     node.children.forEach((childId) => {
-      deleteNodeById(tree, childId);
+      _deleteNodeById(tree, childId);
     });
   }
   delete tree[Id];
 }
 
-function getNodesByTreeInfo(tree, nodes = [], id) {
-  if (id === "root") {
+function getNodesByTreeInfo(tree, nodes = [], nodeId = "root") {
+  // 初始化根节点的情况
+  if (nodeId === "root") {
     nodes = [[["root"]]];
-    tree[id].children.forEach((childId) => {
-      getNodesByTreeInfo(tree, nodes, childId);
-    });
-  } else {
-    const layerKey = tree[id].layerKey;
-    const siblingKey = tree[tree[id].parent].nodeKey;
-    if (nodes[layerKey] === undefined) {
+  }
+
+  // 递归处理当前节点的子节点
+  tree[nodeId].children.forEach((childId) => {
+    const layerKey = tree[childId].layerKey;
+    const siblingKey = tree[tree[childId].parent].nodeKey;
+
+    // 初始化当前层级
+    if (!nodes[layerKey]) {
       nodes[layerKey] = [];
     }
-    if (nodes[layerKey][siblingKey] === undefined) {
+
+    // 确保当前层级的数组中没有稀疏位置
+    for (let i = 0; i <= siblingKey; i++) {
+      if (!nodes[layerKey][i]) {
+        nodes[layerKey][i] = 0; // 用 0 填充所有空位
+      }
+    }
+
+    // 如果兄弟节点组已经存在并且不是数组，需要转换为数组
+    if (!Array.isArray(nodes[layerKey][siblingKey])) {
       nodes[layerKey][siblingKey] = [];
     }
-    nodes[layerKey][siblingKey].push(id);
-  }
+
+    // 添加当前节点到对应的层级和兄弟节点组
+    nodes[layerKey][siblingKey].push(childId);
+
+    // 递归调用子节点
+    getNodesByTreeInfo(tree, nodes, childId);
+  });
+  return nodes;  // 返回最终的节点数组
 }
+
 
 const renderStore = createSlice({
   name: "render",
   initialState: {
-    nodes: [
-      [["root"]],
-      [["b"]],
-    ],
+    nodes: [[["root"]], [["b"]]],
     layers: [100, 200],
     x: 100,
     y: 100,
     treeInfo: {
       root: {
-        id: "root",
+        nodeId: "root",
         layerKey: 0, // siblingKey = parent->nodeKey
         nodeKey: 0,
         children: ["b"],
@@ -90,11 +105,11 @@ const renderStore = createSlice({
         height: null, // update by component
       },
       b: {
-        id: "b",
+        nodeId: "b",
         layerKey: 1, // siblingKey = parent->nodeKey
         nodeKey: 0,
         children: [],
-        parent: null,
+        parent: "root",
         text: "",
         height: null, // update by component
       },
@@ -112,33 +127,35 @@ const renderStore = createSlice({
       state.treeInfo[nodeId].height = value;
     },
     appendChildById: (state, action) => {
-      const { id } = action.payload;
-      const new_id = uuidv4();
-      state.treeInfo[new_id] = {
-        id: new_id,
-        layerKey: state.treeInfo[id].layerKey + 1,
-        nodeKey: state.treeInfo[id].children.length,
+      const { nodeId, newId } = action.payload;
+      console.log(nodeId)
+      state.treeInfo[newId] = {
+        nodeId: newId,
+        layerKey: state.treeInfo[nodeId].layerKey + 1,
+        nodeKey: state.treeInfo[nodeId].children.length,
         children: [],
-        parent: id,
+        parent: nodeId,
         text: "",
         height: null,
       };
-      state.treeInfo[id].children.push(new_id);
-      updateTreeInfoById(state.treeInfo, id);
-      const nodes = [];
-      getNodesByTreeInfo(state.treeInfo, nodes, "root");
-      state.nodes = nodes;
+      state.treeInfo[nodeId].children.push(newId);
+      state.nodes = getNodesByTreeInfo(current(state.treeInfo), [], "root");
+      console.log(state.nodes)
+      console.log(state.treeInfo)
+      if (state.layers.length <= state.treeInfo[newId].layerKey) {
+        state.layers.push(200);
+      }
     },
     addSiblingById: (state, action) => {
-      const { id } = action.payload;
-      if (state.treeInfo[id].parent === null) {
+      const { nodeId, newId } = action.payload;
+      if (state.treeInfo[nodeId].parent === null) {
         return;
       }
-      const parent = state.treeInfo[id].parent;
-      const nodeKey = state.treeInfo[id].nodeKey;
-      const new_id = uuidv4();
-      state.treeInfo[new_id] = {
-        id: new_id,
+      const parent = state.treeInfo[nodeId].parent;
+      const nodeKey = state.treeInfo[nodeId].nodeKey;
+
+      state.treeInfo[newId] = {
+        nodeId: newId,
         layerKey: state.treeInfo[parent].layerKey,
         nodeKey: nodeKey + 1,
         children: [],
@@ -146,25 +163,21 @@ const renderStore = createSlice({
         text: "",
         height: null,
       };
-      state.treeInfo[parent].children.splice(nodeKey + 1, 0, new_id);
+      state.treeInfo[parent].children.splice(nodeKey + 1, 0, newId);
       updateTreeInfoById(state.treeInfo, parent);
-      const nodes = [];
-      getNodesByTreeInfo(state.treeInfo, nodes, "root");
-      state.nodes = nodes;
+      state.nodes = getNodesByTreeInfo(current(state.treeInfo), [], "root");
     },
     deleteNodeById: (state, action) => {
-      const { id } = action.payload;
-      if (state.treeInfo[id].parent === null) {
+      const { nodeId } = action.payload;
+      if (state.treeInfo[nodeId].parent === null) {
         return;
       }
-      const parent = state.treeInfo[id].parent;
-      const nodeKey = state.treeInfo[id].nodeKey;
+      const parent = state.treeInfo[nodeId].parent;
+      const nodeKey = state.treeInfo[nodeId].nodeKey;
       state.treeInfo[parent].children.splice(nodeKey, 1);
-      deleteNodeById(state.treeInfo, id);
+      _deleteNodeById(state.treeInfo, nodeId);
       updateTreeInfoById(state.treeInfo, parent);
-      const nodes = [];
-      getNodesByTreeInfo(state.treeInfo, nodes, "root");
-      state.nodes = nodes;
+      state.nodes = getNodesByTreeInfo(current(state.treeInfo), [], "root");
     },
     setX: (state, action) => {
       state.x = action.payload;
@@ -175,6 +188,14 @@ const renderStore = createSlice({
   },
 });
 
-export const { setLayers, setNodeHeightById, setNodes, setX, setY } =
-  renderStore.actions;
+export const {
+  setLayers,
+  setNodeHeightById,
+  setNodes,
+  appendChildById,
+  addSiblingById,
+  deleteNodeById,
+  setX,
+  setY,
+} = renderStore.actions;
 export default renderStore.reducer;

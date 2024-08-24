@@ -1,5 +1,4 @@
 export default function calHeightById(tree, nodeId) {
-    console.log(tree)
     if (tree[nodeId].children.length === 0) {
         return tree[nodeId].height;
     } else {
