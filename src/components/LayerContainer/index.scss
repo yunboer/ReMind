@@ -1,0 +1,10 @@
+.layer-container {
+  --layer-container-width: 200px;
+  // 此层决定宽度信息
+  width: var(--layer-container-width);
+  border: 1px solid #000;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  justify-content: space-between;
+}

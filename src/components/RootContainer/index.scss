@@ -1,0 +1,12 @@
+.root-container {
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  border: 1px solid #000;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  justify-content: center;
+}
+
+
