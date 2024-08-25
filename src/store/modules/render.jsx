@@ -50,42 +50,35 @@ function _deleteNodeById(tree, Id) {
 }
 
 function getNodesByTreeInfo(tree, nodes = [], nodeId = "root") {
-  // 初始化根节点的情况
-  if (nodeId === "root") {
-    nodes = [[["root"]]];
-  }
-
-  // 递归处理当前节点的子节点
-  tree[nodeId].children.forEach((childId) => {
-    const layerKey = tree[childId].layerKey;
-    const siblingKey = tree[tree[childId].parent].nodeKey;
+  const q = [];
+  let lastLayerNodes = 1;
+  q.push(nodeId);
+  while (q.length) {
+    const curId = q.shift();
+    const curNode = tree[curId];
+    const layerKey = curNode.layerKey;
+    const siblingKey = layerKey ? tree[curNode.parent].nodeKey : 0;
+    const nodeKey = curNode.nodeKey;
 
     // 初始化当前层级
     if (!nodes[layerKey]) {
       nodes[layerKey] = [];
-    }
-
-    // 确保当前层级的数组中没有稀疏位置
-    for (let i = 0; i <= siblingKey; i++) {
-      if (!nodes[layerKey][i]) {
-        nodes[layerKey][i] = 0; // 用 0 填充所有空位
+      for (let i = 0; i < lastLayerNodes; i++) {
+        nodes[layerKey][i] = [];
       }
+      lastLayerNodes = 0;
     }
 
-    // 如果兄弟节点组已经存在并且不是数组，需要转换为数组
-    if (!Array.isArray(nodes[layerKey][siblingKey])) {
-      nodes[layerKey][siblingKey] = [];
-    }
+    console.log(nodes[layerKey], siblingKey, nodeKey);
+    nodes[layerKey][siblingKey][nodeKey] = curId;
 
-    // 添加当前节点到对应的层级和兄弟节点组
-    nodes[layerKey][siblingKey].push(childId);
-
-    // 递归调用子节点
-    getNodesByTreeInfo(tree, nodes, childId);
-  });
-  return nodes;  // 返回最终的节点数组
+    curNode.children.forEach((childId) => {
+      q.push(childId);
+    });
+    lastLayerNodes += 1;
+  }
+  return nodes;
 }
-
 
 const renderStore = createSlice({
   name: "render",
@@ -128,7 +121,7 @@ const renderStore = createSlice({
     },
     appendChildById: (state, action) => {
       const { nodeId, newId } = action.payload;
-      console.log(nodeId)
+      console.log(nodeId);
       state.treeInfo[newId] = {
         nodeId: newId,
         layerKey: state.treeInfo[nodeId].layerKey + 1,
@@ -140,8 +133,7 @@ const renderStore = createSlice({
       };
       state.treeInfo[nodeId].children.push(newId);
       state.nodes = getNodesByTreeInfo(current(state.treeInfo), [], "root");
-      console.log(state.nodes)
-      console.log(state.treeInfo)
+      console.log(state.nodes);
       if (state.layers.length <= state.treeInfo[newId].layerKey) {
         state.layers.push(200);
       }
@@ -166,6 +158,7 @@ const renderStore = createSlice({
       state.treeInfo[parent].children.splice(nodeKey + 1, 0, newId);
       updateTreeInfoById(state.treeInfo, parent);
       state.nodes = getNodesByTreeInfo(current(state.treeInfo), [], "root");
+      console.log(state.nodes);
     },
     deleteNodeById: (state, action) => {
       const { nodeId } = action.payload;
@@ -178,6 +171,7 @@ const renderStore = createSlice({
       _deleteNodeById(state.treeInfo, nodeId);
       updateTreeInfoById(state.treeInfo, parent);
       state.nodes = getNodesByTreeInfo(current(state.treeInfo), [], "root");
+      console.log(state.nodes);
     },
     setX: (state, action) => {
       state.x = action.payload;
