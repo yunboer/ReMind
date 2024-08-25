@@ -1,0 +1,12 @@
+.tree-container{
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  // border: 1px solid #000;
+}
+
+.children-decorator{
+  display: flex; 
+  flex-flow: row nowrap;
+  align-items: center;
+}

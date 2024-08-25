@@ -121,7 +121,6 @@ const renderStore = createSlice({
     },
     appendChildById: (state, action) => {
       const { nodeId, newId } = action.payload;
-      console.log(nodeId);
       state.treeInfo[newId] = {
         nodeId: newId,
         layerKey: state.treeInfo[nodeId].layerKey + 1,
@@ -133,7 +132,6 @@ const renderStore = createSlice({
       };
       state.treeInfo[nodeId].children.push(newId);
       state.nodes = getNodesByTreeInfo(current(state.treeInfo), [], "root");
-      console.log(state.nodes);
       if (state.layers.length <= state.treeInfo[newId].layerKey) {
         state.layers.push(200);
       }

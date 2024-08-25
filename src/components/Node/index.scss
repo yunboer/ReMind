@@ -1,6 +1,6 @@
 .node-container {
-  --node-container-height: auto;
-  height: var(--node-container-height);
+  --node-container-width: auto;
+  width: var(--node-container-width);
   font-size: 0;
   overflow: hidden;
   display: flex;

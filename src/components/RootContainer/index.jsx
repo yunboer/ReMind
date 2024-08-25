@@ -2,6 +2,7 @@ import "./index.scss";
 import LayerContainer from "../LayerContainer";
 import { useSelector } from "react-redux";
 import React, { createContext, useRef } from "react";
+import TreeNode from "../TreeNode";
 
 export const RefsContext = createContext(null);
 
@@ -12,11 +13,12 @@ const RootContainer = () => {
   return (
     <RefsContext.Provider value={refs.current}>
       <div className="root-container">
-        {Array(layer_cnt)
+        {/* {Array(layer_cnt)
           .fill()
           .map((_, i) => (
             <LayerContainer key={i} layerKey={i} />
-          ))}
+          ))} */}
+        <TreeNode nodeId={"root"}></TreeNode>
       </div>
     </RefsContext.Provider>
   );

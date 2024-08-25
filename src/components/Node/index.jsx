@@ -12,9 +12,13 @@ import { RefsContext } from "@/components/RootContainer";
 import { v4 as uuidv4 } from "uuid";
 
 export default function Node({ nodeId }) {
-  const treeInfo = useSelector((state) => state.render.treeInfo);
-  let nodeHeight = calHeightById(treeInfo, nodeId);
+  // redux
   const dispatch = useDispatch();
+  const treeInfo = useSelector((state) => state.render.treeInfo);
+  const layers = useSelector((state) => state.render.layers);
+  const nodeWidth = layers[treeInfo[nodeId].layerKey]
+
+  // let nodeHeight = calHeightById(treeInfo, nodeId);
   const [text, setText] = useState("");
   const [focus, setFocus] = useState(false);
   const editorRef = useRef(null);
@@ -84,7 +88,7 @@ export default function Node({ nodeId }) {
   return (
     <div
       className="node-container"
-      style={{ "--node-container-height": nodeHeight + "px" }}
+      style={{ "--node-container-width": nodeWidth + "px" }}
     >
       <div
         className={focus ? "node-border focus" : "node-border"}
