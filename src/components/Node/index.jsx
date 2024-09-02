@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect, useContext, useLayoutEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useContext,
+  useLayoutEffect,
+} from "react";
 import "./index.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -16,7 +22,7 @@ export default function Node({ nodeId }) {
   const dispatch = useDispatch();
   const treeInfo = useSelector((state) => state.render.treeInfo);
   const layers = useSelector((state) => state.render.layers);
-  const nodeWidth = layers[treeInfo[nodeId].layerKey]
+  const nodeWidth = layers[treeInfo[nodeId].layerKey];
 
   // let nodeHeight = calHeightById(treeInfo, nodeId);
   const [text, setText] = useState("");
@@ -94,19 +100,18 @@ export default function Node({ nodeId }) {
         className={focus ? "node-border focus" : "node-border"}
         ref={borderRef}
       >
-        <div className="node-box" onClick={handleClick}>
-          <span
-            className="node-editor"
-            ref={editorRef}
-            contentEditable
-            suppressContentEditableWarning={true}
-            onBlur={handleBlur}
-            onFocus={handleFocus}
-            onInput={handleInput}
-            onKeyDown={handleKeyDown}
-          >
-            {text}
-          </span>
+        <div
+          className="node-box"
+          onClick={handleClick}
+          ref={editorRef}
+          contentEditable
+          suppressContentEditableWarning={true}
+          onBlur={handleBlur}
+          onFocus={handleFocus}
+          onInput={handleInput}
+          onKeyDown={handleKeyDown}
+        >
+          {text}
         </div>
       </div>
     </div>
