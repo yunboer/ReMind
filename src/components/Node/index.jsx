@@ -18,7 +18,7 @@ import { RefsContext } from "@/components/RootContainer";
 import { v4 as uuidv4 } from "uuid";
 
 export default function Node({ nodeId }) {
-  // redux
+  // redux获取信息
   const dispatch = useDispatch();
   const treeInfo = useSelector((state) => state.render.treeInfo);
   const layers = useSelector((state) => state.render.layers);
@@ -26,34 +26,31 @@ export default function Node({ nodeId }) {
 
   // let nodeHeight = calHeightById(treeInfo, nodeId);
   const [text, setText] = useState("");
-  const [focus, setFocus] = useState(false);
+  const [focus, setFocus] = useState(true);
   const editorRef = useRef(null);
   const borderRef = useRef(null);
+  const nodeHeight = useRef(0);
   const refs = useContext(RefsContext);
 
   const updateNodeHeight = () => {
     const border = borderRef.current;
-    const value = border.clientHeight + 8;
-    dispatch(setNodeHeightById({ nodeId, value }));
-  };
-  const handleBlur = () => {
-    const editor = editorRef.current;
-    setFocus(false);
-    setText(editor.innerText);
-    editor.style.cursor = "default";
-  };
-  const handleClick = () => {
-    const editor = editorRef.current;
-    editor.focus();
-  };
-  const handleFocus = () => {
-    const editor = editorRef.current;
-    setFocus(true);
-    editor.style.cursor = "text";
+    if (nodeHeight.current !== border.clientHeight + 8) {
+      nodeHeight.current = border.clientHeight + 8;
+      const value = nodeHeight.current;
+      dispatch(setNodeHeightById({ nodeId, value }));
+    }
   };
   const handleInput = () => {
     updateNodeHeight();
   };
+  const handleBlur = (event) => {
+    setFocus(false);
+    setText(event.target.innerText);
+  };
+  const handleClick = () => {
+    setFocus(true);
+  };
+
   const handleKeyDown = (e) => {
     if (e.key === "Tab") {
       e.preventDefault();
@@ -76,43 +73,43 @@ export default function Node({ nodeId }) {
       dispatch(deleteNodeById({ nodeId }));
     }
   };
+
+  // 使用一个focus变量动态维护
   useEffect(() => {
-    updateNodeHeight();
-  }, [text, focus]);
+    if (focus) {
+      const editor = editorRef.current;
+      editor.focus();
+    }
+  }, [focus]);
 
   useEffect(() => {
     refs[nodeId] = editorRef;
+    updateNodeHeight();
     return () => {
       delete refs[nodeId]; // 在组件卸载时清除 ref
     };
   }, [nodeId]);
-  useEffect(() => {
-    const editor = editorRef.current;
-    editor.focus();
-  }, []);
 
   return (
     <div
-      className="node-container"
-      style={{ "--node-container-width": nodeWidth + "px" }}
+      className={focus ? "node-container focus" : "node-container"} // 通过focus属性维护外层边框的样式
+      style={{ "--node-container-width": nodeWidth + "px" }} // 通过nodeWidth动态维护的css变量
+      ref={borderRef} // dom元素获取
     >
       <div
-        className={focus ? "node-border focus" : "node-border"}
-        ref={borderRef}
+        className="node-box"
+        ref={editorRef}
+        contentEditable
+        onClick={handleClick}
+        onBlur={handleBlur}
+        onInput={handleInput}
+        onKeyDown={handleKeyDown}
+        suppressContentEditableWarning={true}
+        onMouseDown={(e) => {
+          if (document.activeElement === e.target) e.stopPropagation();
+        }}
       >
-        <div
-          className="node-box"
-          onClick={handleClick}
-          ref={editorRef}
-          contentEditable
-          suppressContentEditableWarning={true}
-          onBlur={handleBlur}
-          onFocus={handleFocus}
-          onInput={handleInput}
-          onKeyDown={handleKeyDown}
-        >
-          {text}
-        </div>
+        {text}
       </div>
     </div>
   );

@@ -1,15 +1,7 @@
-import React from 'react'
-import RootNode from '@/components/Node'
-import Canvas from '@/components/Canvas'
-import RootContainer from '@/components/RootContainer'
-import LayerContainer from '@/components/LayerContainer'
+import React, { useState } from "react";
+import Canvas from "@/components/Canvas";
+import RootContainer from "@/components/RootContainer";
 
 export default function Mind() {
-  return (
-    <div>
-      <Canvas>
-        <RootContainer></RootContainer>
-      </Canvas>
-    </div>
-  )
+  return <Canvas />;
 }

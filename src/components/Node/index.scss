@@ -1,38 +1,40 @@
 .node-container {
+  // 变量维护宽度
   --node-container-width: auto;
   width: var(--node-container-width);
-  .node-border {
-    margin: 4px;
-    // 设定边框样式
-    &:hover {
-      border: 2px solid #4f98cb;
-      border-radius: 8px;
-      margin: 2px;
-    }
-    &.focus {
-      border: 3px solid #4f98cb;
-      margin: 1px;
-      border-radius: 8px;
-    }
-    .node-box {
-      // 文本相关设定
-      color: white;
-      vertical-align: middle;
-      font-size: 24px;
-      text-align: center;
-      line-height: 2;
-      // node框相关设定
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      background-color: rgb(0, 2, 39);
-      padding: 0.2em 0.7em;
-      min-height: 2em;
-      white-space: pre-wrap;
-      outline: none;
-      cursor: default;
-      :focus {
-        cursor: text;
-      }
-    }
+  cursor: default;
+
+  // 边框控制
+  margin: 4px;
+  &:hover {
+    border: 2px solid #4f98cb;
+    border-radius: 8px;
+    margin: 2px;
+  }
+  &.focus {
+    border: 3px solid #4f98cb;
+    margin: 1px;
+    border-radius: 8px;
+    cursor: text;
+  }
+
+  .node-box {
+    // 文本相关设定
+    color: white;
+    vertical-align: middle;
+    font-size: 24px;
+    text-align: center;
+    line-height: 2;
+
+    // node框相关设定
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: rgb(0, 2, 39);
+    padding: 0.2em 0.7em;
+
+    // 编辑相关设定
+    min-height: 2em;  // 防止没有内容的时候框高度为0
+    white-space: pre-wrap;  // 不设定回车不会保留
+    outline: none;  // 不设定文本会有行内框
   }
 }
