@@ -1,9 +1,7 @@
 .canvas{
-    --primary-color: #34db5e;
+    --primary-color: #acba85;
     --mouse-style: default;
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: relative;
     width:100vw;
     height:100vh;
     background-color: var(--primary-color);

@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useContext,
   useLayoutEffect,
+  memo,
 } from "react";
 import "./index.scss";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,7 +18,7 @@ import calHeightById from "@/utils/calHeight";
 import { RefsContext } from "@/components/RootContainer";
 import { v4 as uuidv4 } from "uuid";
 
-export default function Node({ nodeId }) {
+export default Node = memo(({ nodeId }) => {
   // redux获取信息
   const dispatch = useDispatch();
   const treeInfo = useSelector((state) => state.render.treeInfo);
@@ -113,4 +114,4 @@ export default function Node({ nodeId }) {
       </div>
     </div>
   );
-}
+})

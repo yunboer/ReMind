@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ch">
+
+<head>
+    <title>test</title>
+    <meta charset="UTF-8">
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        .slide-page {
+            height: 90vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .slide-page:nth-child(1) {
+            background-color: #ff6347;
+        }
+
+        .slide-page:nth-child(2) {
+            background-color: #4682b4;
+        }
+
+        .slide-page:nth-child(3) {
+            background-color: #32cd32;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            scroll-behavior: smooth;
+            /* 平滑滚动 */
+        }
+
+        .container {
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+        }
+
+        .slide-page {
+            scroll-snap-align: start;
+            /* 元素与滚动容器的起始位置对齐 */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="slide-page">Page 1</div>
+        <div class="slide-page">Page 2</div>
+        <div class="slide-page">Page 3</div>
+        <div class="slide-page">Page 3</div>
+        <div class="slide-page">Page 3</div>
+        <div class="slide-page">Page 3</div>
+    </div>
+</body>
+
+
+</html>

@@ -1,16 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ch">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="index.css">
+    <title>test</title>
 </head>
-<body>
-    <div id="draggableDiv">
-        <p>这是一个可以拖动的 div。</p>
-    </div>
-    <script src="index.js"></script>
 
+<body>
+    <h1 id="test">test</h1>
+    <script>
+        div = document.getElementById("test");
+        const over = Date.now() + 1000 * 60;
+        div.innerHTML = Math.floor((over - Date.now()) / 1000);
+        requestAnimationFrame(function f() {
+            const remaining = Math.floor((over - Date.now()) / 1000);
+            if (remaining > 0){
+                div.innerHTML = Math.floor((over - Date.now()) / 1000);
+                requestAnimationFrame(f);
+            } else {
+                div.innerHTML = "over";
+            }
+            
+        });
+    </script>
 </body>
-</html>
+<html>

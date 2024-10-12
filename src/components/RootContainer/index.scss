@@ -1,10 +1,11 @@
 .root-container {
   --offset-x: 0px;
   --offset-y: 0px;
+  --scale: 1;
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(calc(-50% + var(--offset-x)), calc(-50% + var(--offset-y)));
+  transform: translate(calc(-50% + var(--offset-x)), calc(-50% + var(--offset-y))) scale(var(--scale));
   display: flex;
   flex-flow: row nowrap;
   align-items: stretch;

@@ -1,0 +1,24 @@
+.nav-bar {
+    display: flex;
+    flex-flow: nowrap;
+    justify-content: space-between;
+    border-bottom: 1px solid black;
+    background-color: blueviolet;
+    margin: 0;
+    div {
+      display: flex;
+      flex-flow: nowrap;
+      justify-content: space-between;
+      a {
+        padding: 10px 30px;
+        list-style-type: none;
+        font-size: 20px;
+        color: lightgoldenrodyellow;
+        text-decoration: none;
+        display: block;
+        &.active{
+            background-color: darkblue;
+        }
+      }
+    }
+  }
